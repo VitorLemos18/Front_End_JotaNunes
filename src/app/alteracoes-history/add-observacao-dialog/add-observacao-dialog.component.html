@@ -1,0 +1,58 @@
+<div class="modal-container">
+  <h2 mat-dialog-title>
+    <lucide-angular name="edit-3" class="icon"></lucide-angular>
+    Adicionar Observação
+  </h2>
+
+  <mat-dialog-content class="modal-content">
+    <div class="item-info">
+      <p><strong>Tabela:</strong> {{ data.item.tabela }}</p>
+      <p><strong>ID:</strong> {{ data.item.id }}</p>
+      <p *ngIf="data.item.titulo"><strong>Título:</strong> {{ data.item.titulo }}</p>
+      <p *ngIf="data.item.descricao"><strong>Descrição:</strong> {{ data.item.descricao }}</p>
+      <p *ngIf="data.item.nome"><strong>Nome:</strong> {{ data.item.nome }}</p>
+    </div>
+
+    <form [formGroup]="observacaoForm" class="form-container">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Observação</mat-label>
+        <textarea 
+          matInput 
+          formControlName="texto" 
+          rows="5"
+          placeholder="Digite sua observação sobre este registro..."
+          [class.mat-input-invalid]="observacaoForm.get('texto')?.invalid && observacaoForm.get('texto')?.touched">
+        </textarea>
+        <mat-error *ngIf="observacaoForm.get('texto')?.hasError('required')">
+          A observação é obrigatória
+        </mat-error>
+        <mat-error *ngIf="observacaoForm.get('texto')?.hasError('minlength')">
+          A observação deve ter pelo menos 3 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <div *ngIf="error" class="error-message">
+        <lucide-angular name="alert-triangle" class="error-icon"></lucide-angular>
+        {{ error }}
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="loading">Cancelar</button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onSave()" 
+      [disabled]="observacaoForm.invalid || loading">
+      <mat-spinner *ngIf="loading" diameter="20" class="spinner"></mat-spinner>
+      <span *ngIf="!loading">Salvar</span>
+      <span *ngIf="loading">Salvando...</span>
+    </button>
+  </mat-dialog-actions>
+</div>
+
+
+
+
+

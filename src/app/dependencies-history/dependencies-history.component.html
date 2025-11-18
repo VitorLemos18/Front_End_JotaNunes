@@ -1,0 +1,139 @@
+<div class="history-container">
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h2 class="title">
+        <lucide-angular name="database" class="icon"></lucide-angular>
+        Histórico de Dependências
+      </h2>
+      <p class="subtitle">
+        {{ totalCount }} dependência(s) encontrada(s)
+      </p>
+    </div>
+    <button mat-raised-button color="primary" (click)="abrirNovaDependencia()" class="new-btn">
+      <lucide-angular name="plus-circle"></lucide-angular>
+      Nova Dependência
+    </button>
+  </div>
+
+  <!-- Filtros e Busca -->
+  <div class="filters-section">
+    <div class="filters-row">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Tabela</mat-label>
+        <mat-select [(ngModel)]="filtroTabela" (selectionChange)="onFiltroTabelaChange()">
+          <mat-option *ngFor="let tabela of tabelas" [value]="tabela">{{ tabela }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Prioridade</mat-label>
+        <mat-select [(ngModel)]="filtroPrioridade" (selectionChange)="onFiltroPrioridadeChange()">
+          <mat-option *ngFor="let prioridade of prioridades" [value]="prioridade">{{ prioridade }}</mat-option>
+          <mat-option value="Sem Prioridade">Sem Prioridade</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Buscar</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (input)="onSearchChange()" placeholder="Buscar por nome, ID ou usuário">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Carregando dependências...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-container">
+      <lucide-angular name="alert-triangle" class="error-icon"></lucide-angular>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Lista de Dependências -->
+  <div *ngIf="!loading && !error" class="dependencies-list">
+    <div *ngIf="dependencies.length === 0 && !loading" class="empty-state">
+      <lucide-angular name="database" class="empty-icon"></lucide-angular>
+      <p>Nenhuma dependência encontrada</p>
+    </div>
+
+    <div *ngFor="let dep of dependencies" class="dependency-card">
+      <div class="card-header">
+        <div class="tables-info">
+          <span class="table-tag">{{ dep.origem_tabela || 'N/A' }}</span>
+          <lucide-angular name="arrow-right" class="arrow-icon"></lucide-angular>
+          <span class="table-tag">{{ dep.destino_tabela || 'N/A' }}</span>
+        </div>
+        <div class="card-actions">
+          <span *ngIf="dep.prioridade_nivel" class="prioridade-badge" [ngClass]="getPrioridadeClass(dep.prioridade_nivel)">
+            {{ dep.prioridade_nivel }}
+          </span>
+          <button mat-icon-button color="primary" (click)="visualizarDependencia(dep)" class="view-btn" matTooltip="Visualizar detalhes">
+            <lucide-angular name="eye"></lucide-angular>
+          </button>
+          <button mat-icon-button color="accent" (click)="editarDependencia(dep)" class="edit-btn" matTooltip="Editar dependência">
+            <lucide-angular name="edit-3"></lucide-angular>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteDependency(dep)" class="delete-btn" matTooltip="Excluir dependência">
+            <lucide-angular name="trash-2"></lucide-angular>
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="info-row">
+          <div class="info-item">
+            <label>Origem:</label>
+            <p *ngIf="dep.origem_id && dep.origem_nome">
+              ID {{ dep.origem_id }} - {{ dep.origem_nome }}
+            </p>
+            <p *ngIf="!dep.origem_id || !dep.origem_nome">N/A</p>
+          </div>
+          <div class="info-item">
+            <label>Destino:</label>
+            <p *ngIf="dep.destino_id && dep.destino_nome">
+              ID {{ dep.destino_id }} - {{ dep.destino_nome }}
+            </p>
+            <p *ngIf="!dep.destino_id || !dep.destino_nome">N/A</p>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-item">
+            <label>Criado por:</label>
+            <p>{{ dep.criado_por_nome || 'N/A' }}</p>
+          </div>
+          <div class="info-item">
+            <label>Data de criação:</label>
+            <p>{{ formatDate(dep.data_criacao) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paginação -->
+    <div *ngIf="!loading && !error && totalPages > 1" class="pagination-container">
+      <button mat-stroked-button 
+              [disabled]="currentPage === 1" 
+              (click)="onPageChange(currentPage - 1)">
+        <lucide-angular name="chevron-left"></lucide-angular>
+        Anterior
+      </button>
+      
+      <div class="page-info">
+        Página {{ currentPage }} de {{ totalPages }}
+      </div>
+      
+      <button mat-stroked-button 
+              [disabled]="currentPage === totalPages" 
+              (click)="onPageChange(currentPage + 1)">
+        Próxima
+        <lucide-angular name="chevron-right"></lucide-angular>
+      </button>
+    </div>
+  </div>
+</div>
+

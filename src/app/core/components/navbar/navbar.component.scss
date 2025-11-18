@@ -1,0 +1,112 @@
+.navbar {
+  background: #fff;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #a00000;
+    .logo-image {
+      height: 40px;
+      width: auto;
+    }
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+  .nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    button {
+      padding: 0.5rem;
+      border-radius: 9999px;
+      transition: background-color 0.2s;
+      position: relative; /* Para o contador */
+      &:hover {
+        background-color: #f5f5f5;
+      }
+      lucide-angular {
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #333;
+      }
+    }
+    .user-button {
+      background-color: #e5e7eb;
+      &:hover {
+        background-color: #d1d5db;
+      }
+    }
+    .alert-count {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: #a00000;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: bold;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translate(50%, -50%);
+    }
+  }
+  .user-menu {
+    .user-info {
+      padding: 0.5rem 1rem;
+      .user-details {
+        .user-name {
+          font-size: 0.875rem;
+          font-weight: 500;
+        }
+        .user-email,
+        .user-role {
+          font-size: 0.75rem;
+          color: #6b7280;
+        }
+      }
+    }
+    .logout-item {
+      color: #a00000;
+      .menu-icon {
+        height: 1rem;
+        width: 1rem;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+  @media (max-width: 768px) {
+    padding: 0.5rem 1rem;
+    .logo {
+      font-size: 1rem;
+      .logo-image {
+        height: 30px;
+      }
+    }
+    .nav-icons {
+      gap: 0.5rem;
+      button {
+        padding: 0.3rem;
+        lucide-angular {
+          font-size: 1.2rem;
+        }
+      }
+      .alert-count {
+        width: 14px;
+        height: 14px;
+        font-size: 0.6rem;
+      }
+    }
+  }
+}

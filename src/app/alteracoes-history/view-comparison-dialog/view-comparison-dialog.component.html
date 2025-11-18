@@ -1,0 +1,77 @@
+<div class="modal-container">
+  <h2 mat-dialog-title>
+    <lucide-angular name="eye" class="icon"></lucide-angular>
+    Comparação de Registros
+  </h2>
+
+  <mat-dialog-content class="modal-content">
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Carregando comparação...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error && !loading" class="error-container">
+      <lucide-angular name="alert-triangle" class="error-icon"></lucide-angular>
+      <p>{{ error }}</p>
+    </div>
+
+    <!-- Comparação -->
+    <div *ngIf="!loading && !error" class="comparison-container">
+      <div class="comparison-tables">
+        <!-- Tabela Anterior -->
+        <div class="table-wrapper">
+          <div class="table-header anterior">
+            <h3>Registro Anterior</h3>
+            <span *ngIf="!registroAnterior" class="no-data">Nenhum registro anterior encontrado</span>
+          </div>
+          <table *ngIf="registroAnterior" class="comparison-table">
+            <tbody>
+              <tr *ngFor="let campo of getCampos()">
+                <th>{{ getLabelCampo(campo) }}</th>
+                <td [class.diferente]="isDiferente(campo)">
+                  <span *ngIf="campo === 'reccreatedon' || campo === 'recmmodifiedon' || campo === 'dataultalteracao'">{{ formatDate(registroAnterior[campo]) }}</span>
+                  <span *ngIf="campo === 'ativo'">{{ registroAnterior[campo] ? 'Sim' : 'Não' }}</span>
+                  <span *ngIf="campo !== 'reccreatedon' && campo !== 'recmmodifiedon' && campo !== 'dataultalteracao' && campo !== 'ativo'">{{ registroAnterior[campo] || 'N/A' }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Tabela Atual -->
+        <div class="table-wrapper">
+          <div class="table-header atual">
+            <h3>Registro Atual (Selecionado)</h3>
+          </div>
+          <table *ngIf="registroAtual" class="comparison-table">
+            <tbody>
+              <tr *ngFor="let campo of getCampos()">
+                <th>{{ getLabelCampo(campo) }}</th>
+                <td [class.diferente]="isDiferente(campo)">
+                  <span *ngIf="campo === 'reccreatedon' || campo === 'recmmodifiedon' || campo === 'dataultalteracao'">{{ formatDate(registroAtual[campo]) }}</span>
+                  <span *ngIf="campo === 'ativo'">{{ registroAtual[campo] ? 'Sim' : 'Não' }}</span>
+                  <span *ngIf="campo !== 'reccreatedon' && campo !== 'recmmodifiedon' && campo !== 'dataultalteracao' && campo !== 'ativo'">{{ registroAtual[campo] || 'N/A' }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Legenda -->
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-color diferente"></span>
+          <span>Campo alterado</span>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onClose()">Fechar</button>
+  </mat-dialog-actions>
+</div>
+

@@ -1,0 +1,190 @@
+<div class="history-container">
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h2 class="title">
+        <lucide-angular name="history" class="icon"></lucide-angular>
+        Histórico de Alterações
+      </h2>
+      <p class="subtitle">
+        {{ totalCount }} registro(s) encontrado(s)
+      </p>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="filters-row">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Tabela</mat-label>
+        <mat-select [(ngModel)]="filtroTabela" (selectionChange)="onFiltroTabelaChange()">
+          <mat-option *ngFor="let tabela of tabelas" [value]="tabela">{{ tabela }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Data Início</mat-label>
+        <input matInput [matDatepicker]="pickerInicio" [(ngModel)]="dataInicio" (dateChange)="onFiltroDataChange()">
+        <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+        <mat-datepicker #pickerInicio></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Data Fim</mat-label>
+        <input matInput [matDatepicker]="pickerFim" [(ngModel)]="dataFim" (dateChange)="onFiltroDataChange()">
+        <mat-datepicker-toggle matSuffix [for]="pickerFim"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFim></mat-datepicker>
+      </mat-form-field>
+
+      <button mat-stroked-button (click)="limparFiltros()" class="filter-button">
+        <lucide-angular name="x"></lucide-angular>
+        Limpar Filtros
+      </button>
+
+      <button mat-flat-button color="primary" (click)="exportarParaExcel()" class="export-button">
+        <lucide-angular name="download"></lucide-angular>
+        Exportar para Excel
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Carregando histórico...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-container">
+    <lucide-angular name="alert-triangle" class="error-icon"></lucide-angular>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Tabela de Registros -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <div *ngIf="historico.length === 0" class="empty-state">
+      <lucide-angular name="history" class="empty-icon"></lucide-angular>
+      <p>Nenhum registro encontrado</p>
+    </div>
+
+    <table mat-table [dataSource]="historico" class="historico-table" *ngIf="historico.length > 0">
+      <!-- Coluna Tabela -->
+      <ng-container matColumnDef="tabela">
+        <th mat-header-cell *matHeaderCellDef>Tabela</th>
+        <td mat-cell *matCellDef="let item">
+          <span class="table-tag">{{ getTabelaDisplayName(item.tabela) }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Coluna ID/CODSENTENCA -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>{{ getLabelCampo1(historico.length > 0 ? historico[0].tabela : '') }}</th>
+        <td mat-cell *matCellDef="let item">{{ getCampo1(item) }}</td>
+      </ng-container>
+
+      <!-- Coluna Campo Principal (Título/Descrição/Nome) -->
+      <ng-container matColumnDef="campo1">
+        <th mat-header-cell *matHeaderCellDef>{{ getLabelCampo2(historico.length > 0 ? historico[0].tabela : '') }}</th>
+        <td mat-cell *matCellDef="let item" class="campo-principal">{{ getCampo2(item) }}</td>
+      </ng-container>
+
+      <!-- Coluna Usuário -->
+      <ng-container matColumnDef="usuario">
+        <th mat-header-cell *matHeaderCellDef>
+          <span *ngIf="historico.length > 0 && historico[0].tabela === 'AUD_SQL'">RECMODIFIEDBY</span>
+          <span *ngIf="historico.length > 0 && historico[0].tabela === 'AUD_REPORT'">USRULTALTERACAO</span>
+          <span *ngIf="historico.length > 0 && historico[0].tabela === 'AUD_FV'">RECMODIFIEDBY</span>
+          <span *ngIf="historico.length === 0">Usuário</span>
+        </th>
+        <td mat-cell *matCellDef="let item">{{ item.reccreatedby || 'N/A' }}</td>
+      </ng-container>
+
+      <!-- Coluna Prioridade -->
+      <ng-container matColumnDef="prioridade">
+        <th mat-header-cell *matHeaderCellDef>Prioridade</th>
+        <td mat-cell *matCellDef="let item">
+          <span *ngIf="item.prioridade" class="prioridade-badge" [ngClass]="getPrioridadeClass(item.prioridade)">
+            {{ item.prioridade }}
+          </span>
+          <span *ngIf="!item.prioridade" class="sem-prioridade">—</span>
+        </td>
+      </ng-container>
+
+      <!-- Coluna Observação -->
+      <ng-container matColumnDef="observacao">
+        <th mat-header-cell *matHeaderCellDef>Observação</th>
+        <td mat-cell *matCellDef="let item" class="observacao-cell">
+          <span *ngIf="item.observacao" class="observacao-texto" [matTooltip]="item.observacao">
+            {{ item.observacao.length > 50 ? (item.observacao | slice:0:50) + '...' : item.observacao }}
+          </span>
+          <span *ngIf="!item.observacao" class="sem-observacao">—</span>
+        </td>
+      </ng-container>
+
+      <!-- Coluna Data de Criação -->
+      <ng-container matColumnDef="data_criacao">
+        <th mat-header-cell *matHeaderCellDef>Data de Criação</th>
+        <td mat-cell *matCellDef="let item">{{ formatDate(item.data_criacao) }}</td>
+      </ng-container>
+
+      <!-- Coluna Data de Modificação -->
+      <ng-container matColumnDef="data_modificacao">
+        <th mat-header-cell *matHeaderCellDef>Data de Modificação</th>
+        <td mat-cell *matCellDef="let item">
+          <span *ngIf="item.data_modificacao">
+            {{ formatDate(item.data_modificacao) }}
+          </span>
+          <span *ngIf="!item.data_modificacao" class="sem-data">—</span>
+        </td>
+      </ng-container>
+
+      <!-- Coluna Ações -->
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let item" class="actions-cell">
+          <button 
+            mat-icon-button 
+            color="primary" 
+            (click)="visualizarComparacao(item)"
+            matTooltip="Ver comparação com registro anterior"
+            class="action-button">
+            <lucide-angular name="eye"></lucide-angular>
+          </button>
+          <button 
+            mat-icon-button 
+            color="accent" 
+            (click)="adicionarObservacao(item)"
+            matTooltip="Adicionar observação"
+            class="action-button">
+            <lucide-angular name="edit-3"></lucide-angular>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+    </table>
+
+    <!-- Paginação -->
+    <div *ngIf="!loading && !error && totalPages > 1" class="pagination-container">
+      <button mat-stroked-button 
+              [disabled]="currentPage === 1" 
+              (click)="onPageChange(currentPage - 1)">
+        <lucide-angular name="chevron-left"></lucide-angular>
+        Anterior
+      </button>
+      
+      <div class="page-info">
+        Página {{ currentPage }} de {{ totalPages }}
+      </div>
+      
+      <button mat-stroked-button 
+              [disabled]="currentPage === totalPages" 
+              (click)="onPageChange(currentPage + 1)">
+        Próxima
+        <lucide-angular name="chevron-right"></lucide-angular>
+      </button>
+    </div>
+  </div>
+</div>
+

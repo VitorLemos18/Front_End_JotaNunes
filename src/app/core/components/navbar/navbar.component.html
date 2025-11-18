@@ -1,0 +1,35 @@
+<!-- src/app/core/components/navbar/navbar.component.html -->
+<nav class="navbar">
+  <div class="logo">
+    <img src="images/jotanunes-logo.png" alt="Jota Nunes" class="logo-image">
+  </div>
+
+  <div class="actions">
+    <button mat-icon-button [matMenuTriggerFor]="notifMenu">
+      <lucide-angular name="bell"></lucide-angular>
+      <span class="alert-count" *ngIf="notificacoesNaoLidas > 0">{{ notificacoesNaoLidas }}</span>
+    </button>
+
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-button">
+      <lucide-angular name="user-circle"></lucide-angular>
+    </button>
+  </div>
+</nav>
+
+<mat-menu #notifMenu="matMenu">
+  <button mat-menu-item (click)="goToAlerts()">
+    Ver todos os alertas
+  </button>
+</mat-menu>
+
+<mat-menu #userMenu="matMenu" class="user-menu">
+  <button mat-menu-item disabled>
+    <lucide-angular name="user"></lucide-angular>
+    <span>Perfil</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button mat-menu-item (click)="onLogout()">
+    <lucide-angular name="log-out" class="menu-icon"></lucide-angular>
+    <span>Sair</span>
+  </button>
+</mat-menu>

@@ -1,0 +1,83 @@
+<div class="dependencies-container">
+  <!-- LADO ESQUERDO -->
+  <div class="left-panel">
+    <h2 class="section-title">
+      <lucide-icon name="plus-circle" class="icon"></lucide-icon>
+      Nova Dependência
+    </h2>
+    <p class="subtitle">Selecione a tabela de origem e os registros relacionados</p>
+
+    <!-- BLOCO DE ORIGEM -->
+    <div class="block">
+      <div class="form-group">
+        <label>Tabela de Origem</label>
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-select [(ngModel)]="selectedSourceTable" (selectionChange)="onSourceTableChange()" placeholder="Selecione" panelClass="dependencies-select-panel" [disableOptionCentering]="true">
+            <mat-option *ngFor="let table of tables" [value]="table">{{ table }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Registro de Origem - aparece quando Tabela de Origem está selecionada -->
+      <div class="form-group" *ngIf="selectedSourceTable">
+        <label>Registro de Origem</label>
+        <button mat-stroked-button color="primary" (click)="openModal('origem')">
+          {{ selectedSourceRecord ? selectedSourceRecord.name : 'Selecionar Registro' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- BLOCO DE DESTINO - aparece quando Registro de Origem está selecionado -->
+    <div class="block" *ngIf="selectedSourceRecord">
+      <hr />
+
+      <div class="form-group">
+        <label>Tabela de Destino</label>
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-select [(ngModel)]="selectedTargetTable" (selectionChange)="onTargetTableChange()" placeholder="Selecione" panelClass="dependencies-select-panel" [disableOptionCentering]="true">
+            <mat-option *ngFor="let table of tables" [value]="table">{{ table }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Registros de Destino - aparece quando Tabela de Destino está selecionada -->
+      <div class="form-group" *ngIf="selectedTargetTable">
+        <label>Registros de Destino</label>
+        <div class="destination-list" *ngIf="selectedTargetRecords.length > 0">
+          <div class="destination-item" *ngFor="let record of selectedTargetRecords">
+            {{ record.name }}
+            <button mat-icon-button color="warn" (click)="removeTargetRecord(record)" class="remove-btn">
+              <lucide-icon name="x"></lucide-icon>
+            </button>
+          </div>
+        </div>
+        <button mat-stroked-button color="primary" (click)="openModal('destino')">
+          {{ selectedTargetRecords.length > 0 ? 'Adicionar Mais Registros' : 'Selecionar Registros' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- PRIORIDADE - aparece quando há registros de destino selecionados -->
+    <div class="block" *ngIf="selectedTargetRecords.length > 0">
+      <div class="form-group">
+        <label>Prioridade</label>
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-select [(ngModel)]="selectedPrioridade" placeholder="Selecione a prioridade" panelClass="dependencies-select-panel" [disableOptionCentering]="true">
+            <mat-option [value]="null">Sem Prioridade</mat-option>
+            <mat-option *ngFor="let prioridade of prioridades" [value]="prioridade">
+              {{ prioridade }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- BOTÃO SALVAR - aparece quando há registros de destino selecionados -->
+    <div class="save-container" *ngIf="selectedTargetRecords.length > 0">
+      <button mat-flat-button class="save-btn" (click)="saveDependencies()">
+        <lucide-icon name="save"></lucide-icon>
+        Salvar Dependências
+      </button>
+    </div>
+  </div>
+</div>

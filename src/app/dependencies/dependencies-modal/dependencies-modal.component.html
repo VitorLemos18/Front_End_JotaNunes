@@ -1,0 +1,81 @@
+<div class="modal-container">
+  <h2 mat-dialog-title>
+    {{ mode === 'origem' ? 'Selecionar Registro de Origem' : 'Selecionar Registros de Destino' }}
+  </h2>
+
+  <mat-dialog-content class="modal-content">
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Carregando registros...</p>
+    </div>
+
+    <!-- Filtro -->
+    <div class="filter-bar mb-4" *ngIf="!loading">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Pesquisar tabela, user, campo</mat-label>
+        <input matInput [(ngModel)]="filtro" (input)="aplicarFiltro()" placeholder="Pesquisar tabela, user, campo">
+      </mat-form-field>
+    </div>
+
+    <!-- Tabela -->
+    <div class="table-container" *ngIf="!loading">
+      <table mat-table [dataSource]="dadosFiltrados" class="mat-elevation-z1">
+
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox *ngIf="mode === 'destino'"
+                          (change)="$event ? toggleAllRows() : null"
+                          [checked]="selection.hasValue() && isAllSelected()"
+                          [indeterminate]="selection.hasValue() && !isAllSelected()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                          (change)="$event ? toggleRow(row) : null"
+                          [checked]="selection.isSelected(row)">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <!-- User Column -->
+        <ng-container matColumnDef="user">
+          <th mat-header-cell *matHeaderCellDef> User </th>
+          <td mat-cell *matCellDef="let row"> {{ row.user }} </td>
+        </ng-container>
+
+        <!-- Tabela Column -->
+        <ng-container matColumnDef="tabela">
+          <th mat-header-cell *matHeaderCellDef> Tabela </th>
+          <td mat-cell *matCellDef="let row"> {{ row.tabela }} </td>
+        </ng-container>
+
+        <!-- Campo Column -->
+        <ng-container matColumnDef="campo">
+          <th mat-header-cell *matHeaderCellDef> Campo </th>
+          <td mat-cell *matCellDef="let row"> {{ row.campo }} </td>
+        </ng-container>
+
+        <!-- Header and Row Definitions -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            (click)="toggleRow(row)" class="hover-row">
+        </tr>
+      </table>
+
+      <!-- Empty State -->
+      <div *ngIf="dadosFiltrados.length === 0" class="empty-state text-center py-8 text-gray-500">
+        Nenhum registro encontrado.
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="salvar()" 
+            [disabled]="selection.selected.length === 0">
+      {{ mode === 'origem' ? 'Salvar' : 'Salvar Selecionados' }} ({{ selection.selected.length }})
+    </button>
+  </mat-dialog-actions>
+</div>

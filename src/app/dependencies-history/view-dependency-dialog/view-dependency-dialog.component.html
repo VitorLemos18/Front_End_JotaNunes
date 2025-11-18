@@ -1,0 +1,73 @@
+<div class="modal-container">
+  <h2 mat-dialog-title>
+    <lucide-angular name="eye" class="icon"></lucide-angular>
+    Visualizar Dependência
+  </h2>
+
+  <mat-dialog-content class="modal-content">
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Carregando registros...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error && !loading" class="error-container">
+      <lucide-angular name="alert-triangle" class="error-icon"></lucide-angular>
+      <p>{{ error }}</p>
+    </div>
+
+    <!-- Visualização -->
+    <div *ngIf="!loading && !error" class="comparison-container">
+      <div class="comparison-tables">
+        <!-- Tabela Origem -->
+        <div class="table-wrapper">
+          <div class="table-header origem">
+            <h3>Registro de Origem</h3>
+            <span class="table-name">{{ tabelaOrigem }}</span>
+            <span *ngIf="!registroOrigem" class="no-data">Registro não encontrado</span>
+          </div>
+          <table *ngIf="registroOrigem" class="comparison-table">
+            <tbody>
+              <tr *ngFor="let campo of getCampos(tabelaOrigem)">
+                <th>{{ getLabelCampo(campo) }}</th>
+                <td>
+                  <span *ngIf="campo === 'reccreatedon' || campo === 'recmmodifiedon' || campo === 'dataultalteracao'">{{ formatDate(registroOrigem[campo]) }}</span>
+                  <span *ngIf="campo === 'ativo'">{{ registroOrigem[campo] ? 'Sim' : 'Não' }}</span>
+                  <span *ngIf="campo !== 'reccreatedon' && campo !== 'recmmodifiedon' && campo !== 'dataultalteracao' && campo !== 'ativo'">{{ registroOrigem[campo] || 'N/A' }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Tabela Destino -->
+        <div class="table-wrapper">
+          <div class="table-header destino">
+            <h3>Registro de Destino</h3>
+            <span class="table-name">{{ tabelaDestino }}</span>
+            <span *ngIf="!registroDestino" class="no-data">Registro não encontrado</span>
+          </div>
+          <table *ngIf="registroDestino" class="comparison-table">
+            <tbody>
+              <tr *ngFor="let campo of getCampos(tabelaDestino)">
+                <th>{{ getLabelCampo(campo) }}</th>
+                <td>
+                  <span *ngIf="campo === 'reccreatedon' || campo === 'recmmodifiedon' || campo === 'dataultalteracao'">{{ formatDate(registroDestino[campo]) }}</span>
+                  <span *ngIf="campo === 'ativo'">{{ registroDestino[campo] ? 'Sim' : 'Não' }}</span>
+                  <span *ngIf="campo !== 'reccreatedon' && campo !== 'recmmodifiedon' && campo !== 'dataultalteracao' && campo !== 'ativo'">{{ registroDestino[campo] || 'N/A' }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onClose()">Fechar</button>
+  </mat-dialog-actions>
+</div>
+
+

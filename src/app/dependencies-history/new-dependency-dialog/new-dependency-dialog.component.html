@@ -1,0 +1,109 @@
+<div class="new-dependency-container">
+  <h2 mat-dialog-title>
+    <lucide-angular name="plus-circle" class="icon"></lucide-angular>
+    Nova Dependência
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <p class="subtitle">Selecione a tabela de origem e os registros relacionados</p>
+
+    <!-- BLOCO DE ORIGEM -->
+    <div class="block">
+      <div class="form-group">
+        <label>Tabela de Origem</label>
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-select [(ngModel)]="selectedSourceTable" (selectionChange)="onSourceTableChange()" placeholder="Selecione" panelClass="dependencies-select-panel" [disableOptionCentering]="true">
+            <mat-option *ngFor="let table of tables" [value]="table">{{ table }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Registro de Origem -->
+      <div class="form-group" *ngIf="selectedSourceTable">
+        <label>Registro de Origem</label>
+        <button mat-stroked-button color="primary" (click)="openModal('origem')">
+          {{ selectedSourceRecord ? selectedSourceRecord.name : 'Selecionar Registro' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- BLOCO DE DESTINOS -->
+    <div class="block" *ngIf="selectedSourceRecord">
+      <hr />
+      
+      <div class="destinos-header">
+        <h3>Destinos</h3>
+        <button mat-stroked-button color="primary" (click)="addTargetGroup()" class="add-group-btn">
+          <lucide-angular name="plus"></lucide-angular>
+          Adicionar Tabela de Destino
+        </button>
+      </div>
+
+      <!-- Mensagem quando não há grupos -->
+      <div *ngIf="targetGroups.length === 0" class="no-groups-message">
+        <p>Clique em "Adicionar Tabela de Destino" para começar</p>
+      </div>
+
+      <!-- Grupos de Destino -->
+      <div class="target-groups">
+        <div class="target-group" *ngFor="let group of targetGroups; let i = index">
+          <div class="group-header">
+            <h4>Tabela de Destino {{ i + 1 }}</h4>
+            <button mat-icon-button color="warn" (click)="removeTargetGroup(group.id)" class="remove-group-btn" *ngIf="targetGroups.length > 1">
+              <lucide-angular name="trash-2"></lucide-angular>
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label>Tabela</label>
+            <mat-form-field appearance="outline" class="select-field">
+              <mat-select [(ngModel)]="group.tabela" (selectionChange)="onTargetTableChange(group)" placeholder="Selecione" panelClass="dependencies-select-panel" [disableOptionCentering]="true">
+                <mat-option *ngFor="let table of getAvailableTables()" [value]="table">{{ table }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Registros de Destino -->
+          <div class="form-group" *ngIf="group.tabela">
+            <label>Registros</label>
+            <div class="destination-list" *ngIf="group.registros.length > 0">
+              <div class="destination-item" *ngFor="let record of group.registros">
+                {{ record.name }}
+                <button mat-icon-button color="warn" (click)="removeTargetRecord(group, record)" class="remove-btn">
+                  <lucide-angular name="x"></lucide-angular>
+                </button>
+              </div>
+            </div>
+            <button mat-stroked-button color="primary" (click)="openModal('destino', group)">
+              {{ group.registros.length > 0 ? 'Adicionar Mais Registros' : 'Selecionar Registros' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIORIDADE -->
+    <div class="block" *ngIf="getTotalDestinos() > 0">
+      <div class="form-group">
+        <label>Prioridade</label>
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-select [(ngModel)]="selectedPrioridade" placeholder="Selecione a prioridade" panelClass="dependencies-select-panel" [disableOptionCentering]="true">
+            <mat-option [value]="null">Sem Prioridade</mat-option>
+            <mat-option *ngFor="let prioridade of prioridades" [value]="prioridade">
+              {{ prioridade }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cancel()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="saveDependencies()" 
+            [disabled]="!selectedSourceRecord || getTotalDestinos() === 0">
+      Salvar Dependências ({{ getTotalDestinos() }})
+    </button>
+  </mat-dialog-actions>
+</div>
+

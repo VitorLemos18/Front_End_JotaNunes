@@ -1,0 +1,49 @@
+@import '@angular/material/prebuilt-themes/azure-blue.css';
+
+/* You can add global styles to this file, and also import other style files */
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Centralização de modais */
+.cdk-overlay-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Apenas para o modal, não para selects */
+.dependencies-modal-panel {
+  .mat-mdc-dialog-container {
+    margin: auto;
+    position: relative !important;
+  }
+}
+
+/* Centraliza apenas o overlay do modal */
+.cdk-overlay-pane:has(.dependencies-modal-panel) {
+  position: relative !important;
+  margin: auto;
+}
+
+/* Fix para dropdowns do mat-select - z-index para aparecer acima do modal */
+.cdk-overlay-container {
+  z-index: 1000;
+}
+
+/* Garante que o painel do select apareça acima do modal */
+.cdk-overlay-pane:has(.mat-mdc-select-panel) {
+  z-index: 1001 !important;
+}
+
+.mat-mdc-select-panel {
+  z-index: 1002 !important;
+}
+
+.dependencies-select-panel {
+  z-index: 1002 !important;
+}
+
+/* Garante que o overlay do select seja posicionado corretamente */
+.cdk-overlay-connected-position-bounding-box {
+  z-index: 1001 !important;
+}

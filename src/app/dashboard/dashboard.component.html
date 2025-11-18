@@ -1,0 +1,58 @@
+<!-- src/app/dashboard/dashboard.component.html -->
+<div class="dashboard">
+  <!-- Título -->
+  <header class="dashboard-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Visão geral das operações do sistema</p>
+    </div>
+  </header>
+
+  <!-- Cards de Estatísticas -->
+  <section class="stats-cards">
+    <mat-card *ngFor="let s of stats" class="card">
+      <mat-card-content>
+        <lucide-angular [name]="s.icon" class="icon-center text-muted-foreground"></lucide-angular>
+        <div class="text-2xl font-bold">{{ s.value }}</div>
+        <div class="text-sm font-medium">{{ s.label }}</div>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <!-- Conteúdo principal -->
+  <section class="main-content">
+    <!-- Operações -->
+    <mat-card class="operations card">
+      <mat-card-header>
+        <mat-card-title>Operações por Tipo</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="space-y-4">
+        <div *ngFor="let op of operations" class="op-row">
+          <span>{{ op.type }}</span>
+          <div class="bar">
+            <div class="fill" [style.background]="op.color" [style.width.%]="(op.count / totalOperations) * 100"></div>
+          </div>
+          <span>{{ op.count }}</span>
+        </div>
+        <p class="total">Total de Operações <span class="font-bold">{{ totalOperations }}</span></p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Atividades Recentes -->
+    <mat-card class="recent card">
+      <mat-card-header>
+        <mat-card-title>Atividades Recentes</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="space-y-4">
+        <div *ngFor="let r of recent" class="activity">
+          <lucide-angular name="circle" class="dot" [ngClass]="{ 'insert': r.type === 'Alta', 'update': r.type === 'Média', 'delete': r.type === 'Baixa' }"></lucide-angular>
+          <div>
+            <p>{{ r.action }}</p>
+            <small>{{ r.user }} – {{ r.time }}</small>
+          </div>
+          <span class="tag" [ngClass]="r.type.toLowerCase()">{{ r.type }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </section>
+</div>
