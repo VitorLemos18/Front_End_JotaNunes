@@ -26,11 +26,14 @@ interface HistoricoItem {
 })
 export class AlteracoesHistoryComponent implements OnInit {
   historico: HistoricoItem[] = [];
+  historicoFiltrado: HistoricoItem[] = [];
   loading = true;
   error = '';
 
   // Tabela
-  displayedColumns: string[] = ['tabela', 'id', 'campo1', 'usuario', 'prioridade', 'observacao', 'data_criacao', 'data_modificacao', 'acoes'];
+  displayedColumns: string[] = ['tabela', 'id', 'campo1', 'usuario', 'data_criacao', 'data_modificacao', 'acoes'];
+  shouldShowPrioridade = false;
+  shouldShowObservacao = false;
 
   // Paginação
   currentPage = 1;
@@ -41,6 +44,7 @@ export class AlteracoesHistoryComponent implements OnInit {
   // Filtros
   filtroTabela = 'Todas';
   tabelas = ['Todas', 'AUD_SQL', 'AUD_REPORT', 'AUD_FV'];
+  filtroBusca = '';
   dataInicio: Date | null = null;
   dataFim: Date | null = null;
 
@@ -72,6 +76,7 @@ export class AlteracoesHistoryComponent implements OnInit {
         this.historico = data.results || [];
         this.totalCount = data.count || this.historico.length;
         this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+        this.aplicarFiltroBusca();
         this.loading = false;
       },
       error: (error) => {
@@ -103,6 +108,7 @@ export class AlteracoesHistoryComponent implements OnInit {
     this.dataInicio = null;
     this.dataFim = null;
     this.filtroTabela = 'Todas';
+    this.filtroBusca = '';
     this.currentPage = 1;
     this.loadHistorico();
   }
@@ -171,6 +177,45 @@ export class AlteracoesHistoryComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  onSearchChange(value: string) {
+    this.filtroBusca = value;
+    this.aplicarFiltroBusca();
+  }
+
+  private aplicarFiltroBusca() {
+    const termo = this.filtroBusca.trim().toLowerCase();
+    if (!termo) {
+      this.historicoFiltrado = [...this.historico];
+    } else {
+      this.historicoFiltrado = this.historico.filter(item => {
+        const campos = [
+          this.getTabelaDisplayName(item.tabela),
+          this.getCampo1(item),
+          this.getCampo2(item),
+          item.reccreatedby || ''
+        ].join(' ').toLowerCase();
+        return campos.includes(termo);
+      });
+    }
+    this.atualizarColunasDinamicas();
+  }
+
+  private atualizarColunasDinamicas() {
+    const dataset = this.historicoFiltrado.length ? this.historicoFiltrado : this.historico;
+    this.shouldShowPrioridade = dataset.some(item => !!item.prioridade?.trim());
+    this.shouldShowObservacao = dataset.some(item => !!item.observacao?.trim());
+
+    const columns = ['tabela', 'id', 'campo1', 'usuario'];
+    if (this.shouldShowPrioridade) {
+      columns.push('prioridade');
+    }
+    if (this.shouldShowObservacao) {
+      columns.push('observacao');
+    }
+    columns.push('data_criacao', 'data_modificacao', 'acoes');
+    this.displayedColumns = columns;
+  }
+
   formatDate(dateStr?: string): string {
     if (!dateStr) return 'N/A';
     const date = new Date(dateStr);
@@ -193,6 +238,15 @@ export class AlteracoesHistoryComponent implements OnInit {
       'AUD_FV': 'AUD_FV'
     };
     return names[tabela] || tabela;
+  }
+
+  getTabelaBadgeClass(tabela: string): string {
+    const map: { [key: string]: string } = {
+      'AUD_SQL': 'badge-sql',
+      'AUD_REPORT': 'badge-report',
+      'AUD_FV': 'badge-fv'
+    };
+    return map[tabela] || 'badge-default';
   }
 
   getCampo1(item: HistoricoItem): string {
@@ -222,6 +276,23 @@ export class AlteracoesHistoryComponent implements OnInit {
     if (tabela === 'AUD_REPORT') return 'DESCRIÇÃO';
     if (tabela === 'AUD_FV') return 'NOME';
     return 'Campo';
+  }
+
+  getUsuarioLabel(): string {
+    const tabela = this.getTabelaReferencia();
+    if (tabela === 'AUD_REPORT') return 'USRULTALTERACAO';
+    if (tabela === 'AUD_SQL' || tabela === 'AUD_FV') return 'RECMODIFIEDBY';
+    return 'Usuário';
+  }
+
+  getTabelaReferencia(): string {
+    if (this.historicoFiltrado.length > 0) {
+      return this.historicoFiltrado[0].tabela;
+    }
+    if (this.historico.length > 0) {
+      return this.historico[0].tabela;
+    }
+    return '';
   }
 
   adicionarObservacao(item: HistoricoItem): void {
