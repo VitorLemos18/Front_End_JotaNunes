@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { forkJoin } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,8 +12,8 @@ import { forkJoin } from 'rxjs';
 export class DashboardComponent implements OnInit {
   stats = [
     { icon: 'database', value: '0', label: 'Fórmulas Visuais' },
-    { icon: 'code', value: '0', label: 'Consultas SQL' },
-    { icon: 'file-text', value: '0', label: 'Relatórios' },
+    { icon: 'terminal', value: '0', label: 'Consultas SQL' },
+    { icon: 'chart-bar', value: '0', label: 'Relatórios' },
     { icon: 'link', value: '0', label: 'Dependências' }
   ];
 
@@ -24,15 +25,20 @@ export class DashboardComponent implements OnInit {
 
   recent: any[] = [];
   totalOperations = 0;
+  isLoading = false;
 
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.loadData();
-    setInterval(() => this.loadData(), 30000);
   }
 
   loadData() {
+    if (this.isLoading) {
+      return;
+    }
+    this.isLoading = true;
+
     forkJoin({
       insightsFV: this.apiService.getInsightsFV(),        // GET /api/insights/fv
       insightsSQL: this.apiService.getInsightsSQL(),      // GET /api/insights/sql
@@ -40,7 +46,9 @@ export class DashboardComponent implements OnInit {
       insightsDependencias: this.apiService.getInsightsDependencias(), // GET /api/insights/dependencias
       insightsPrioridades: this.apiService.getInsightsPrioridades(), // GET /api/insights/prioridades
       dependencias: this.apiService.getDependencias() // Apenas para atividades recentes
-    }).subscribe({
+    }).pipe(
+      finalize(() => this.isLoading = false)
+    ).subscribe({
       next: (data: any) => {
         // Atualiza contadores usando APENAS os endpoints de insights (retornam apenas {count: X})
         this.stats[0].value = (data.insightsFV?.count || 0).toString();

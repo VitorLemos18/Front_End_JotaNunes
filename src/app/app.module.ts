@@ -35,7 +35,7 @@ import { NewDependencyDialogComponent } from './dependencies-history/new-depende
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { Bell, UserCircle, LogOut, Building2, LayoutDashboard, History, Database, Activity, Clock, Trash2, PlusCircle, Edit3, Plus, Edit, Mail, Lock, Download, Eye, DownloadCloud, Circle, X, AlertTriangle, Info, Check, CheckCircle, AlertOctagon, Search, Calendar, Filter, Link, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-angular';
+import { Bell, UserCircle, LogOut, Building2, LayoutDashboard, History, Database, Activity, Clock, Trash2, PlusCircle, Edit3, Plus, Edit, Mail, Lock, Download, Eye, DownloadCloud, Circle, X, AlertTriangle, Info, Check, CheckCircle, AlertOctagon, Search, Calendar, Filter, Link, ChevronLeft, ChevronRight, ArrowRight, Terminal, ChartBar } from 'lucide-angular';
 
 @NgModule({
   declarations: [
@@ -61,7 +61,7 @@ import { Bell, UserCircle, LogOut, Building2, LayoutDashboard, History, Database
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
-    LucideAngularModule.pick({ Bell, UserCircle, LogOut, Building2, LayoutDashboard, History, Database, Activity, Clock, Trash2, PlusCircle, Edit3, Plus, Edit, Mail, Lock, Download, Eye, DownloadCloud, Circle, X, AlertTriangle, Info, Check, CheckCircle, AlertOctagon, Search, Calendar, Filter, Link, ChevronLeft, ChevronRight, ArrowRight }),
+    LucideAngularModule.pick({ Bell, UserCircle, LogOut, Building2, LayoutDashboard, History, Database, Activity, Clock, Trash2, PlusCircle, Edit3, Plus, Edit, Mail, Lock, Download, Eye, DownloadCloud, Circle, X, AlertTriangle, Info, Check, CheckCircle, AlertOctagon, Search, Calendar, Filter, Link, ChevronLeft, ChevronRight, ArrowRight, Terminal, ChartBar }),
     MatToolbarModule,
     MatButtonModule,
     MatCardModule,

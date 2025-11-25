@@ -12,10 +12,6 @@
         <lucide-angular name="check-circle" class="mr-1"></lucide-angular>
         Marcar todas como lidas
       </button>
-      <button mat-stroked-button color="warn" (click)="limparTudo()">
-        <lucide-angular name="trash-2" class="mr-1"></lucide-angular>
-        Limpar tudo
-      </button>
     </div>
   </div>
 
@@ -58,28 +54,17 @@
         <div class="alert-content flex-1">
           <h4 class="font-semibold text-gray-800">{{ a.titulo }}</h4>
           <p class="text-gray-600 text-sm">{{ a.descricao }}</p>
-          <div class="alert-meta text-xs text-gray-400 mt-2 flex items-center">
-            <lucide-angular name="clock" class="w-4 h-4 mr-1"></lucide-angular>
-            {{ a.tempo }}
-            <span *ngIf="a.urgente" class="ml-2 px-2 py-0.5 bg-a00000 text-white rounded text-[10px] uppercase font-bold">Urgente</span>
+          <div class="alert-meta">
+            <lucide-angular name="clock"></lucide-angular>
+            <span>{{ a.tempo }}</span>
+            <span *ngIf="a.urgente" class="urgent-badge">Urgente</span>
           </div>
         </div>
         <div class="alert-actions flex flex-col items-end space-y-2">
           <lucide-angular
-            *ngIf="!a.lida"
-            name="alert-triangle"
-            class="text-a00000 cursor-pointer"
+            name="check-circle"
+            class="text-green-600 cursor-pointer"
             (click)="marcarComoLida(a)"
-          ></lucide-angular>
-          <lucide-angular
-            *ngIf="a.lida"
-            name="check"
-            class="text-green-600"
-          ></lucide-angular>
-          <lucide-angular
-            name="trash-2"
-            class="text-gray-400 hover:text-a00000 cursor-pointer"
-            (click)="remover(a)"
           ></lucide-angular>
         </div>
       </div>

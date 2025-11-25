@@ -45,12 +45,12 @@
       </mat-card-header>
       <mat-card-content class="space-y-4">
         <div *ngFor="let r of recent" class="activity">
-          <lucide-angular name="circle" class="dot" [ngClass]="{ 'insert': r.type === 'Alta', 'update': r.type === 'Média', 'delete': r.type === 'Baixa' }"></lucide-angular>
+          <lucide-angular name="circle" class="dot" [ngClass]="{ 'delete': r.type === 'Alta', 'update': r.type === 'Média', 'insert': r.type === 'Baixa' }"></lucide-angular>
           <div>
             <p>{{ r.action }}</p>
             <small>{{ r.user }} – {{ r.time }}</small>
           </div>
-          <span class="tag" [ngClass]="r.type.toLowerCase()">{{ r.type }}</span>
+          <span class="tag" [ngClass]="{'delete': r.type === 'Alta', 'update': r.type === 'Média', 'insert': r.type === 'Baixa'}">{{ r.type }}</span>
         </div>
       </mat-card-content>
     </mat-card>

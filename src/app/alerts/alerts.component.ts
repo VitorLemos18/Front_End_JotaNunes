@@ -3,7 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 
 interface Alerta {
-  id: number;
+  id: string;
+  tabela: string;
+  registroId: number;
   titulo: string;
   descricao: string;
   tempo: string;
@@ -37,10 +39,12 @@ export class AlertsComponent implements OnInit {
   loadAlertas() {
     this.loading = true;
     this.error = '';
-    this.apiService.getNotificacoes().subscribe({
+    this.apiService.getNotificacoes(true).subscribe({
       next: (data: any[]) => {
         this.alertas = data.map(n => ({
           id: n.id,
+          tabela: n.tabela,
+          registroId: n.registro_id,
           titulo: n.titulo,
           descricao: n.descricao,
           tempo: this.formatTimeAgo(n.data_hora),
@@ -94,19 +98,9 @@ export class AlertsComponent implements OnInit {
 
   marcarComoLida(alerta: Alerta) {
     this.apiService.marcarNotificacaoComoLida(alerta.id).subscribe(() => {
-      alerta.lida = true;
+      this.alertas = this.alertas.filter(a => a.id !== alerta.id);
       this.updateStats();
     });
-  }
-
-  remover(alerta: Alerta) {
-    this.alertas = this.alertas.filter(a => a.id !== alerta.id);
-    this.updateStats();
-  }
-
-  limparTudo() {
-    this.alertas = [];
-    this.updateStats();
   }
 
   marcarTodasComoLidas() {

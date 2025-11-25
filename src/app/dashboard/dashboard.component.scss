@@ -6,8 +6,6 @@
 }
 
 .dashboard-header {
-  display: flex;
-  align-items: center;
   margin-bottom: 1rem; /* Reduzido para menos espaço */
 
   h1 {
@@ -23,7 +21,7 @@
 
 .stats-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem; /* 16px */
   margin: 1rem 0; /* Ajustado para menos espaço vertical */
 
