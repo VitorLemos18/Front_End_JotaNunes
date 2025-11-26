@@ -38,13 +38,14 @@ export class ApiService {
   }
 
   //  NOTIFICAÇÕES 
-  getNotificacoes(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}notificacoes/`);
+  getNotificacoes(somenteNaoLidas: boolean = false): Observable<any> {
+    const query = somenteNaoLidas ? '?somente_nao_lidas=true' : '';
+    return this.http.get(`${environment.apiUrl}notificacoes/${query}`);
   }
 
-  marcarNotificacaoComoLida(id: number): Observable<any> {
+  marcarNotificacaoComoLida(uid: string): Observable<any> {
     return this.http.post(
-      `${environment.apiUrl}notificacoes/${id}/marcar_lida/`,
+      `${environment.apiUrl}notificacoes/${uid}/marcar_lida/`,
       {}
     );
   }

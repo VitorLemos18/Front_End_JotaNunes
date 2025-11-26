@@ -7,7 +7,6 @@
   <div class="actions">
     <button mat-icon-button [matMenuTriggerFor]="notifMenu">
       <lucide-angular name="bell"></lucide-angular>
-      <span class="alert-count" *ngIf="notificacoesNaoLidas > 0">{{ notificacoesNaoLidas }}</span>
     </button>
 
     <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-button">
@@ -17,6 +16,10 @@
 </nav>
 
 <mat-menu #notifMenu="matMenu">
+  <button mat-menu-item (click)="refreshNotificacoes($event)" [disabled]="carregandoNotificacoes">
+    <lucide-angular name="refresh-cw" class="menu-icon"></lucide-angular>
+    <span>{{ carregandoNotificacoes ? 'Atualizando...' : 'Atualizar agora' }}</span>
+  </button>
   <button mat-menu-item (click)="goToAlerts()">
     Ver todos os alertas
   </button>
